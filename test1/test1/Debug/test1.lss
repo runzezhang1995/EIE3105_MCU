@@ -1,0 +1,143 @@
+
+test1.elf:     file format elf32-avr
+
+Sections:
+Idx Name          Size      VMA       LMA       File off  Algn
+  0 .data         00000000  00800100  00800100  00000126  2**0
+                  CONTENTS, ALLOC, LOAD, DATA
+  1 .text         000000d2  00000000  00000000  00000054  2**1
+                  CONTENTS, ALLOC, LOAD, READONLY, CODE
+  2 .comment      00000030  00000000  00000000  00000126  2**0
+                  CONTENTS, READONLY
+  3 .note.gnu.avr.deviceinfo 00000040  00000000  00000000  00000158  2**2
+                  CONTENTS, READONLY
+  4 .debug_aranges 00000028  00000000  00000000  00000198  2**0
+                  CONTENTS, READONLY, DEBUGGING
+  5 .debug_info   000006a5  00000000  00000000  000001c0  2**0
+                  CONTENTS, READONLY, DEBUGGING
+  6 .debug_abbrev 0000061b  00000000  00000000  00000865  2**0
+                  CONTENTS, READONLY, DEBUGGING
+  7 .debug_line   0000026e  00000000  00000000  00000e80  2**0
+                  CONTENTS, READONLY, DEBUGGING
+  8 .debug_frame  00000034  00000000  00000000  000010f0  2**2
+                  CONTENTS, READONLY, DEBUGGING
+  9 .debug_str    0000033b  00000000  00000000  00001124  2**0
+                  CONTENTS, READONLY, DEBUGGING
+ 10 .debug_ranges 00000018  00000000  00000000  0000145f  2**0
+                  CONTENTS, READONLY, DEBUGGING
+
+Disassembly of section .text:
+
+00000000 <__vectors>:
+   0:	0c 94 34 00 	jmp	0x68	; 0x68 <__ctors_end>
+   4:	0c 94 3e 00 	jmp	0x7c	; 0x7c <__bad_interrupt>
+   8:	0c 94 3e 00 	jmp	0x7c	; 0x7c <__bad_interrupt>
+   c:	0c 94 3e 00 	jmp	0x7c	; 0x7c <__bad_interrupt>
+  10:	0c 94 3e 00 	jmp	0x7c	; 0x7c <__bad_interrupt>
+  14:	0c 94 3e 00 	jmp	0x7c	; 0x7c <__bad_interrupt>
+  18:	0c 94 3e 00 	jmp	0x7c	; 0x7c <__bad_interrupt>
+  1c:	0c 94 3e 00 	jmp	0x7c	; 0x7c <__bad_interrupt>
+  20:	0c 94 3e 00 	jmp	0x7c	; 0x7c <__bad_interrupt>
+  24:	0c 94 3e 00 	jmp	0x7c	; 0x7c <__bad_interrupt>
+  28:	0c 94 3e 00 	jmp	0x7c	; 0x7c <__bad_interrupt>
+  2c:	0c 94 3e 00 	jmp	0x7c	; 0x7c <__bad_interrupt>
+  30:	0c 94 3e 00 	jmp	0x7c	; 0x7c <__bad_interrupt>
+  34:	0c 94 3e 00 	jmp	0x7c	; 0x7c <__bad_interrupt>
+  38:	0c 94 3e 00 	jmp	0x7c	; 0x7c <__bad_interrupt>
+  3c:	0c 94 3e 00 	jmp	0x7c	; 0x7c <__bad_interrupt>
+  40:	0c 94 3e 00 	jmp	0x7c	; 0x7c <__bad_interrupt>
+  44:	0c 94 3e 00 	jmp	0x7c	; 0x7c <__bad_interrupt>
+  48:	0c 94 3e 00 	jmp	0x7c	; 0x7c <__bad_interrupt>
+  4c:	0c 94 3e 00 	jmp	0x7c	; 0x7c <__bad_interrupt>
+  50:	0c 94 3e 00 	jmp	0x7c	; 0x7c <__bad_interrupt>
+  54:	0c 94 3e 00 	jmp	0x7c	; 0x7c <__bad_interrupt>
+  58:	0c 94 3e 00 	jmp	0x7c	; 0x7c <__bad_interrupt>
+  5c:	0c 94 3e 00 	jmp	0x7c	; 0x7c <__bad_interrupt>
+  60:	0c 94 3e 00 	jmp	0x7c	; 0x7c <__bad_interrupt>
+  64:	0c 94 3e 00 	jmp	0x7c	; 0x7c <__bad_interrupt>
+
+00000068 <__ctors_end>:
+  68:	11 24       	eor	r1, r1
+  6a:	1f be       	out	0x3f, r1	; 63
+  6c:	cf ef       	ldi	r28, 0xFF	; 255
+  6e:	d8 e0       	ldi	r29, 0x08	; 8
+  70:	de bf       	out	0x3e, r29	; 62
+  72:	cd bf       	out	0x3d, r28	; 61
+  74:	0e 94 5c 00 	call	0xb8	; 0xb8 <main>
+  78:	0c 94 67 00 	jmp	0xce	; 0xce <_exit>
+
+0000007c <__bad_interrupt>:
+  7c:	0c 94 00 00 	jmp	0	; 0x0 <__vectors>
+
+00000080 <genereateOneSecondDelay>:
+	//TCCR0B = 0x05;
+	//while ((TIFR0 & (1<<TOV0) )==0);
+	//TCCR0B = 0;
+	//TIFR0 = (1<<TOV0);
+
+	TCNT1H = 0x00;
+  80:	10 92 85 00 	sts	0x0085, r1	; 0x800085 <__TEXT_REGION_LENGTH__+0x7e0085>
+	TCNT1L = 0x00;
+  84:	10 92 84 00 	sts	0x0084, r1	; 0x800084 <__TEXT_REGION_LENGTH__+0x7e0084>
+	OCR1BH = 0x40;
+  88:	80 e4       	ldi	r24, 0x40	; 64
+  8a:	80 93 8b 00 	sts	0x008B, r24	; 0x80008b <__TEXT_REGION_LENGTH__+0x7e008b>
+	OCR1BL = 0x00;
+  8e:	10 92 8a 00 	sts	0x008A, r1	; 0x80008a <__TEXT_REGION_LENGTH__+0x7e008a>
+	OCR1AH = 0x80;
+  92:	80 e8       	ldi	r24, 0x80	; 128
+  94:	80 93 89 00 	sts	0x0089, r24	; 0x800089 <__TEXT_REGION_LENGTH__+0x7e0089>
+	OCR1AL = 0x00;
+  98:	10 92 88 00 	sts	0x0088, r1	; 0x800088 <__TEXT_REGION_LENGTH__+0x7e0088>
+	TCCR1A = 0x00;
+  9c:	10 92 80 00 	sts	0x0080, r1	; 0x800080 <__TEXT_REGION_LENGTH__+0x7e0080>
+	TCCR1B = 0x05;
+  a0:	85 e0       	ldi	r24, 0x05	; 5
+  a2:	80 93 81 00 	sts	0x0081, r24	; 0x800081 <__TEXT_REGION_LENGTH__+0x7e0081>
+	while((TIFR1&(1<<OCF1A))==0);
+  a6:	b1 9b       	sbis	0x16, 1	; 22
+  a8:	fe cf       	rjmp	.-4      	; 0xa6 <genereateOneSecondDelay+0x26>
+	TIFR1 = 1<<OCF1A;
+  aa:	82 e0       	ldi	r24, 0x02	; 2
+  ac:	86 bb       	out	0x16, r24	; 22
+	TCCR1B = 0;
+  ae:	10 92 81 00 	sts	0x0081, r1	; 0x800081 <__TEXT_REGION_LENGTH__+0x7e0081>
+	TCCR1A = 0;
+  b2:	10 92 80 00 	sts	0x0080, r1	; 0x800080 <__TEXT_REGION_LENGTH__+0x7e0080>
+  b6:	08 95       	ret
+
+000000b8 <main>:
+void genereateOneSecondDelay(void);
+int main(void)
+{
+	while(1)
+	{
+		DDRD = 0xFF;
+  b8:	1f ef       	ldi	r17, 0xFF	; 255
+		PORTD = 0x55;
+  ba:	d5 e5       	ldi	r29, 0x55	; 85
+		genereateOneSecondDelay();
+		PORTD = 0xAA;
+  bc:	ca ea       	ldi	r28, 0xAA	; 170
+void genereateOneSecondDelay(void);
+int main(void)
+{
+	while(1)
+	{
+		DDRD = 0xFF;
+  be:	1a b9       	out	0x0a, r17	; 10
+		PORTD = 0x55;
+  c0:	db b9       	out	0x0b, r29	; 11
+		genereateOneSecondDelay();
+  c2:	0e 94 40 00 	call	0x80	; 0x80 <genereateOneSecondDelay>
+		PORTD = 0xAA;
+  c6:	cb b9       	out	0x0b, r28	; 11
+		genereateOneSecondDelay();
+  c8:	0e 94 40 00 	call	0x80	; 0x80 <genereateOneSecondDelay>
+  cc:	f8 cf       	rjmp	.-16     	; 0xbe <main+0x6>
+
+000000ce <_exit>:
+  ce:	f8 94       	cli
+
+000000d0 <__stop_program>:
+  d0:	ff cf       	rjmp	.-2      	; 0xd0 <__stop_program>
