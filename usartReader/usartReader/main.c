@@ -6,8 +6,9 @@
  */ 
 
 #include <avr/io.h>
-
-
+#define FOSC 1843200
+#define BAUD 115200
+#define MYUBRR FOSC/16/BAUD-1
 
 void usart_init(void){
 	UCSR0B = (1 << TXEN0) | (1 << RXEN0);
