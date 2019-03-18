@@ -41,9 +41,34 @@ void setRightWheelSpeed(int percent) {
 }
 
 
+
+
 void setOnBoardLED(bool isOn){
 	GPIO_WriteBit(GPIOB, GPIO_Pin_7, isOn? Bit_SET:Bit_RESET); // On-board LED is turn off if not same speed
 }
 
+int getValueForHexChar(char c){
+	if(c >= '0' && c <= '9'){
+		return (c -'0');
+	}
+	if(c >= 'A' && c <= 'F') {
+		return (c - 'A' + 10);
+	}
+
+	if(c >= 'a' && c <= 'f') {
+		return (c - 'a' + 10);
+	}
+	
+	return -1;
+}
+
+
+bool checkValidObjectName(char* name){
+	if(sizeof(name) < 3) return false;
+	for (int i = 0; i < 3; i++){
+		if(name[i] <= 'A' || name[i] >= 'Z') return false;
+	}
+	return true;
+}
 
 

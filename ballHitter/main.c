@@ -1,12 +1,20 @@
 #include "utils.h"
 
+void ballToString(int i);
 
 char wifiConnect1[] = "AT+CWJAP=\"IntegratedProject\",\"31053106\"\r\n";
 char wifiConnect2[] = "AT+CIPSTART=\"UDP\",\"0\",0,3105,2\r\n";
-char receiveBuffer [50] = {""};
+char receiveBuffer [100] = {""};
 int receivePointer = 0;
+
 int currentHandleItemNumber = 0;
 int totalItemNumber = 0;
+
+
+bool wifiConnected = false;
+bool shouldStartGetCountNum= false;
+bool shouldStartGetItem = false;
+
 
 int pressCount = 0;
 
@@ -22,6 +30,10 @@ int wheel_total_count_left = 0;
 int wheel_total_count_right = 0;
 
 struct FieldObject balls[10];
+struct Car car;
+struct Point targetPoint;
+struct Point originPoint;
+
 int numOfBalls = 0;
 
 float Kp = 2.80;
@@ -34,7 +46,7 @@ int previousError = 0;
 
 
 bool operating = false;
-char buffer[50] = {'\0'};
+char buffer[100] = {'\0'};
 
 
 
@@ -53,6 +65,7 @@ void init(){
 	Board_LED_Init();
 	TIM2_Init();
 	//SPI2_Init();
+	initCarObject();
 	
 }
 
@@ -64,6 +77,7 @@ int main(void) {
 	
 	startOperating(false);
 	
+	USART2Send(wifiConnect1, sizeof(wifiConnect1));
 	while(1) {
 			
 	}
@@ -85,7 +99,6 @@ void EXTI9_5_IRQHandler(){
 	if(EXTI_GetITStatus(EXTI_Line8)!= RESET){
 		//startOperating(!operating);
 		switch(pressCount) {
-
 			case 0:
 				setOnBoardLED(true);
 				USART2Send(wifiConnect1, sizeof(wifiConnect1));
@@ -135,16 +148,51 @@ void USART2_IRQHandler(){
 	if(USART_GetITStatus(USART2,USART_IT_RXNE) != RESET){
 		data = (char) USART_ReceiveData(USART2);
 		
-
-		if(dataFilter(data))  {
+		if(!wifiConnected){
+			USART_SendData(USART3,data);
+			USART_ClearITPendingBit(USART3, USART_IT_RXNE);
+			if(dataFilter(data)) pushCharacterToReceiveBuffer(data);
+			
+			if(data == 'K') {
+			sprintf(buffer, "start handle\r\n ");
+			USART3Send(buffer, sizeof(buffer));
+			USART2Send(wifiConnect2, sizeof(wifiConnect2));
+			clearReceiveBuffer();
+			wifiConnected = true;
+			}	
+			return;
+		}
+		
+		if(dataFilter(data))  {			
+			if(shouldStartGetItem && receivePointer == 0 && (data <= 'A' || data >= 'Z')){
+			return;
+		}
 				pushCharacterToReceiveBuffer(data);
-		} 
-		if(receivePointer == 50) {
-			//pushCharacterToReceiveBuffer('\r');
-			//pushCharacterToReceiveBuffer('\n');
+		}
+		
+		if(data == ',') {
+				shouldStartGetCountNum = true;
+				setOnBoardLED(true);
+				clearReceiveBuffer();
+		}
+		if(shouldStartGetCountNum && receivePointer == 2) {
 			handleBufferInformation();
 		}
 
+		if(data == ':') {
+				shouldStartGetItem = true;
+				clearReceiveBuffer();
+		}
+		
+		if(shouldStartGetItem && receivePointer == 9) {
+			//sprintf(buffer, "go to handle name\r\n");
+			//USART3Send(buffer, sizeof(buffer));
+			
+			handleBufferInformation();
+		}
+
+
+		
 		//USART_SendData(USART3,data);
 		//USART_ClearITPendingBit(USART3, USART_IT_RXNE);
 	}
@@ -215,21 +263,83 @@ void pushCharacterToReceiveBuffer(char c){
 	receivePointer ++;
 }
 
-void handleBufferInformation(){
-	USART3Send(receiveBuffer, sizeof(receiveBuffer));
-	sprintf(buffer, "number of bits: %d\r\n", receivePointer);
-	USART3Send(buffer, sizeof(buffer));
-	
-	/*
-	int starter = 0;
-	if(currentHandleItemNumber == 0) {
-		totalItemNumber = ((receiveBuffer[5] - '0') * 10 + (receiveBuffer[6] - '0') - 5) / 11; 
-		starter = 8;
+
+void handleWifiConnectInfo(){
+	if(receivePointer > 1 && receiveBuffer[receivePointer - 1] == 'K'){
+		sprintf(buffer, "start handle\r\n ");
+		USART3Send(buffer, sizeof(buffer));
+		USART2Send(wifiConnect2, sizeof(wifiConnect2));
+		clearReceiveBuffer();
+		wifiConnected = true;
 	}
-	char currentName[] = {""};
-	strncpy(currentName, (receiveBuffer + starter), 3);
-	*/
-	clearReceiveBuffer();
+	
+}
+
+void handleBufferInformation(){
+	if(shouldStartGetCountNum) {
+		totalItemNumber = (receiveBuffer[0] - '0')*10 + (receiveBuffer[1] - '0');
+		totalItemNumber = (totalItemNumber - 5) / 11;
+		clearReceiveBuffer();
+		shouldStartGetCountNum = false;
+		return;
+	}
+	
+	if(shouldStartGetItem) {
+		char itemName[3];
+		strncpy(itemName, receiveBuffer, 3);
+		if(strncmp(itemName, "CMD", 3) != 0 && strncmp(itemName, "CHD", 3) != 0 && strncmp(itemName, "CTL", 3) != 0 && checkValidObjectName(itemName)) {				
+			int xPos = getValueForHexChar(receiveBuffer[3]) * 256 + getValueForHexChar(receiveBuffer[4]) * 16 + getValueForHexChar(receiveBuffer[5]);
+			int yPos = getValueForHexChar(receiveBuffer[6]) * 256 + getValueForHexChar(receiveBuffer[7]) * 16 + getValueForHexChar(receiveBuffer[8]);
+			
+			bool ballExists = false;
+
+			for(int i = 0; i < numOfBalls; i++ ){
+				if(strncmp(balls[i].name, itemName, 3) == 0) {
+					updateBallPos(i, xPos, yPos);
+					ballExists = true;
+					break;
+				} 
+			}
+			if(!ballExists){
+				strcpy(balls[numOfBalls].name, itemName);
+				balls[numOfBalls].points[0].x = xPos;
+				balls[numOfBalls].points[0].y = yPos;
+			
+				balls[numOfBalls].pointer = 1;
+				balls[numOfBalls].distance = 0;
+				balls[numOfBalls].isAvailable = true;
+				balls[numOfBalls].isStop = false;
+				numOfBalls ++;
+			}
+		}
+
+		if(strncmp(itemName, "CHD", 3) == 0 || strncmp(itemName, "CTL", 3) == 0) {
+			int xPos = getValueForHexChar(receiveBuffer[3]) * 256 + getValueForHexChar(receiveBuffer[4]) * 16 + getValueForHexChar(receiveBuffer[5]);
+			int yPos = getValueForHexChar(receiveBuffer[6]) * 256 + getValueForHexChar(receiveBuffer[7]) * 16 + getValueForHexChar(receiveBuffer[8]);
+			updateCarPos(itemName, xPos, yPos);
+		}
+		
+		currentHandleItemNumber ++;
+		if(currentHandleItemNumber == totalItemNumber) {
+			
+			sprintf(buffer, "\r\n total number of item: %d\r\n",numOfBalls);
+			USART3Send(buffer, sizeof(buffer));
+			
+	
+			for(int i = 0; i < numOfBalls; i++) {
+				ballToString(i);
+				//sprintf(buffer, "\r\ndistance: %f\r\n", balls[i].name,balls[i].xCoor[0], balls[i].yCoor[0]);
+				//USART3Send(buffer, sizeof(buffer));
+			}			
+			setOnBoardLED(false);
+			shouldStartGetItem = false;
+			totalItemNumber = 0;
+			currentHandleItemNumber = 0;
+			//numOfBalls = 0;
+		}
+		clearReceiveBuffer();
+		return;
+	} 
 }
 
 int findBallIndexForName(char *name){
@@ -242,3 +352,55 @@ int findBallIndexForName(char *name){
 }
 
 
+void ballToString(int i){
+	sprintf(buffer, "\r\nname: %s\r\nx : %d\r\ny : %d\r\ndistance : %f  stop: %s\r\n",balls[i].name, balls[i].points[(balls[i].pointer + 4) % 5].x, balls[i].points[(balls[i].pointer + 4) % 5].y, balls[i].distance , balls[i].isStop ? "yes" : "no" );
+	USART3Send(buffer, sizeof(buffer));
+}
+
+
+void updateBallPos(int index, int x, int y){
+	int i = index;
+	balls[i].points[balls[i].pointer].x = x;
+	balls[i].points[balls[i].pointer].y = y;
+	
+	
+	
+	double distance = calculateDistance(balls[i].points[(balls[i].pointer + 4) % 5],  balls[i].points[balls[i].pointer]);
+	//double distance = 0;
+	balls[i].isStop = (distance <= 10) ? true : false;
+
+	balls[i].pointer = (balls[i].pointer + 1) % 5;
+	
+	balls[i].distance = distance;
+	balls[i].isAvailable = true;
+}
+
+void updateCarPos(char* name, int x, int y){
+	if(strncmp(name, "CHD", 3) == 0){
+		car.carF.point.x = x;
+		car.carF.point.y = y;
+	} else {
+		car.carB.point.x = x;
+		car.carB.point.y = y;
+	}
+	
+	car.angle = calculateAngle(car.carB.point, car.carF.point);
+}
+
+double calculateAngle(struct Point origin, struct Point p){
+	int dx = p.x - origin.x;
+	int dy = p.y - origin.y;
+	return atan2((double)dy, (double)dx) * 57.296;
+}
+
+
+double calculateDistance(struct Point p1, struct Point p2){
+	return sqrt(pow(p1.x - p2.x, 2) + pow(p1.y - p2.y, 2));
+}
+
+void initCarObject(){
+	strncpy(car.carF.name, "CHD", 3);
+	strncpy(car.carB.name, "CTL", 3);
+	originPoint.x = 82;
+	originPoint.y = 286;
+}

@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<filters>
+<filter name="CHD" min="200" max="400" erode="2" dilate="10">
+<hsv name="min" h="0" s="105" v="96" />
+<hsv name="max" h="13" s="150" v="149" />
+</filter>
+<filter name="CTL" min="200" max="400" erode="1" dilate="13">
+<hsv name="min" h="128" s="81" v="72" />
+<hsv name="max" h="158" s="116" v="113" />
+</filter>
+<filter name="BBE" min="50" max="150" erode="3" dilate="1">
+<hsv name="min" h="76" s="152" v="96" />
+<hsv name="max" h="124" s="253" v="180" />
+</filter>
+<filter name="BRD" min="200" max="400" erode="2" dilate="8">
+<hsv name="min" h="169" s="160" v="122" />
+<hsv name="max" h="191" s="223" v="185" />
+</filter>
+<filter name="BOE" min="50" max="200" erode="2" dilate="2">
+<hsv name="min" h="7" s="208" v="156" />
+<hsv name="max" h="26" s="255" v="207" />
+</filter>
+<filter name="BYE" min="200" max="400" erode="2" dilate="6">
+<hsv name="min" h="23" s="152" v="131" />
+<hsv name="max" h="37" s="228" v="178" />
+</filter>
+</filters>

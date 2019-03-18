@@ -5,11 +5,39 @@
 #include "stdbool.h"
 #include "stdio.h"
 #include "string.h"
+#include "math.h"
 #define debug 0
 #endif
 
+struct Point{
+	int x;
+	int y;
+};
 
 
+struct FieldObject {
+	char name[3];
+	struct Point points[5];
+	char pointer;
+	struct Point estPoint;
+	
+	double distance;
+
+	bool isAvailable;
+	bool isStop;
+};
+
+struct SimpleFieldObject {
+	char name[3];
+	struct Point point;
+};
+
+
+struct Car {
+	struct SimpleFieldObject carF;
+	struct SimpleFieldObject carB;
+	double angle;
+};
 
 void setLeftWheelDirection(bool forward);
 void setRightWheelDirection(bool forward);
@@ -19,17 +47,15 @@ void setOnBoardLED(bool isOn);
 void pushCharacterToReceiveBuffer(char c);
 void clearReceiveBuffer(void);
 int findBallIndexForName(char *name);
+void handleWifiConnectInfo(void);
 void handleBufferInformation(void);
 bool dataFilter(char c);
-struct FieldObject {
-	char name[3];
-	int xCoor[5];
-	int yCoor[5];
-	char xPointer;
-	char yPointer; 
-	int xCoorEst;
-	int yCoorEst;
+int getValueForHexChar(char c);
+void initCarObject(void);
+bool checkValidObjectName(char* name);
 
+double calculateDistance(struct Point p1, struct Point p2);
 
-	bool isAvailable;
-};
+double calculateAngle(struct Point origin, struct Point p);
+void updateBallPos(int index, int x, int y);
+void updateCarPos(char* name, int x, int y);
