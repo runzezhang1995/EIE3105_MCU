@@ -87,8 +87,7 @@ void Wheel_Dir_Init(void) {
 	GPIO_InitStructure.GPIO_Pin = WHEEL_DIR_RIGHT_PIN;
 	GPIO_InitStructure.GPIO_Mode = GPIO_Mode_Out_PP;
 	GPIO_InitStructure.GPIO_Speed = GPIO_Speed_2MHz;
-	GPIO_Init(WHEEL_DIR_RIGHT_GPIO, &GPIO_InitStructure);
-	
+	GPIO_Init(WHEEL_DIR_RIGHT_GPIO, &GPIO_InitStructure);	
 }
 
 
@@ -196,7 +195,7 @@ void TIM2_Init(void){
 	TIM_TimeBaseInitTypeDef TIM_InitStruct;
 	TIM_InitStruct.TIM_Prescaler = 7200-1;  //36Mhz / 720 5 * 10^5   
 	TIM_InitStruct.TIM_CounterMode = TIM_CounterMode_Up;
-	TIM_InitStruct.TIM_Period = 5000-1; // 0.01s 
+	TIM_InitStruct.TIM_Period = 500-1; // 0.01s 
 	TIM_InitStruct.TIM_ClockDivision = TIM_CKD_DIV1; 
 	TIM_InitStruct.TIM_RepetitionCounter = 0;
 	TIM_TimeBaseInit(TIM2,&TIM_InitStruct);
@@ -299,6 +298,7 @@ void USART2Send(char *pucBuffer, unsigned long ulCount)
 
 void USART3Send(char *pucBuffer, unsigned long ulCount)
 {
+	//if(!debug) return;
     //
     // Loop while there are more characters to send.
     //

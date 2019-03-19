@@ -4,10 +4,13 @@
 #include "PinMap.h"
 #include "stdbool.h"
 #include "stdio.h"
+#include "stdlib.h"
 #include "string.h"
 #include "math.h"
-#define debug 0
 #endif
+
+enum State {stop = 0, bh1 = 1, back1, bh2, back2, bh3, end};
+
 
 struct Point{
 	int x;
@@ -30,6 +33,7 @@ struct FieldObject {
 struct SimpleFieldObject {
 	char name[3];
 	struct Point point;
+	bool updated;
 };
 
 
@@ -53,8 +57,11 @@ bool dataFilter(char c);
 int getValueForHexChar(char c);
 void initCarObject(void);
 bool checkValidObjectName(char* name);
-
+void pidControl(void);
 double calculateDistance(struct Point p1, struct Point p2);
+int calculateError(void);
+bool copyPointFromPoint(struct Point* destP, struct Point* sourceP);
+void carToString(void);
 
 double calculateAngle(struct Point origin, struct Point p);
 void updateBallPos(int index, int x, int y);

@@ -45,6 +45,9 @@
 #define LED_PIN        GPIO_Pin_7
 
 
+#define debug 0
+
+
 //Funcation prototypes
 void TIM4_CH1_IC1_init(void);
 void TIM3_PWM_init(void);

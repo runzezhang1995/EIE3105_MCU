@@ -14,11 +14,14 @@ int totalItemNumber = 0;
 bool wifiConnected = false;
 bool shouldStartGetCountNum= false;
 bool shouldStartGetItem = false;
+bool forward = true;
 
+enum State stage = stop;
 
 int pressCount = 0;
 
 int currentTime = 0;
+int integrateTimer = 0;
 
 int leftSpeed = 0;
 int rightSpeed = 0;
@@ -32,14 +35,19 @@ int wheel_total_count_right = 0;
 struct FieldObject balls[10];
 struct Car car;
 struct Point targetPoint;
+int targetPointIndex = -1;
+
+bool targetValid;
+bool highSpeedMode;
+
 struct Point originPoint;
 
 int numOfBalls = 0;
 
-float Kp = 2.80;
+float Kp = .55;
 
-float Ki = .6;
-float Kd = 1.1;
+float Ki = .3;
+float Kd = 0;
 
 int accumulateError = 0;
 int previousError = 0;
@@ -97,22 +105,7 @@ void EXTI9_5_IRQHandler(){
 	}
 	
 	if(EXTI_GetITStatus(EXTI_Line8)!= RESET){
-		//startOperating(!operating);
-		switch(pressCount) {
-			case 0:
-				setOnBoardLED(true);
-				USART2Send(wifiConnect1, sizeof(wifiConnect1));
-			break;
-			case 1:
-				setOnBoardLED(false);
-				USART2Send(wifiConnect2, sizeof(wifiConnect2));
-			break;
-			default:
-				setOnBoardLED(false);
-				break;
-		}
-		pressCount ++;
-		
+		startOperating(!operating);
 		EXTI_ClearITPendingBit(EXTI_Line8);
 	}
 }
@@ -130,35 +123,27 @@ void EXTI1_IRQHandler(){
 void TIM2_IRQHandler(){
 	if (TIM_GetITStatus(TIM2, TIM_IT_Update) != RESET) {
 		currentTime ++;
-		
-		if(debug){
-			sprintf(buffer, "%dRR\r\n ", currentTime);
-			USART3Send(buffer, sizeof(buffer));
-		}
-		
-		
+		pidControl();
 		TIM_ClearITPendingBit(TIM2, TIM_IT_Update);
 	}
 }
 
 void USART2_IRQHandler(){
 	char data;
-	//setOnBoardLED(true);
 
 	if(USART_GetITStatus(USART2,USART_IT_RXNE) != RESET){
 		data = (char) USART_ReceiveData(USART2);
 		
 		if(!wifiConnected){
-			USART_SendData(USART3,data);
-			USART_ClearITPendingBit(USART3, USART_IT_RXNE);
+			
 			if(dataFilter(data)) pushCharacterToReceiveBuffer(data);
 			
 			if(data == 'K') {
-			sprintf(buffer, "start handle\r\n ");
-			USART3Send(buffer, sizeof(buffer));
-			USART2Send(wifiConnect2, sizeof(wifiConnect2));
-			clearReceiveBuffer();
-			wifiConnected = true;
+				sprintf(buffer, "start handle\r\n ");
+				USART3Send(buffer, sizeof(buffer));
+				USART2Send(wifiConnect2, sizeof(wifiConnect2));
+				clearReceiveBuffer();
+				wifiConnected = true;
 			}	
 			return;
 		}
@@ -172,7 +157,7 @@ void USART2_IRQHandler(){
 		
 		if(data == ',') {
 				shouldStartGetCountNum = true;
-				setOnBoardLED(true);
+				//setOnBoardLED(true);
 				clearReceiveBuffer();
 		}
 		if(shouldStartGetCountNum && receivePointer == 2) {
@@ -185,16 +170,9 @@ void USART2_IRQHandler(){
 		}
 		
 		if(shouldStartGetItem && receivePointer == 9) {
-			//sprintf(buffer, "go to handle name\r\n");
-			//USART3Send(buffer, sizeof(buffer));
 			
 			handleBufferInformation();
 		}
-
-
-		
-		//USART_SendData(USART3,data);
-		//USART_ClearITPendingBit(USART3, USART_IT_RXNE);
 	}
 }
 
@@ -206,7 +184,7 @@ void USART2_IRQHandler(){
 
 void startOperating(bool operate){
 	if(operate) {
-		USART3Send("on\r\n", sizeof("on\r\n"));
+		//USART3Send("on\r\n", sizeof("on\r\n"));
 		currentTime = 0;
 		leftSpeed = 40;
 		rightSpeed = 45;
@@ -219,9 +197,6 @@ void startOperating(bool operate){
 		
 		accumulateError = 0;
 		previousError = 0;
-		
-	
-
 		
 		setLeftWheelSpeed(leftSpeed);
 		setRightWheelSpeed(rightSpeed);
@@ -266,11 +241,12 @@ void pushCharacterToReceiveBuffer(char c){
 
 void handleWifiConnectInfo(){
 	if(receivePointer > 1 && receiveBuffer[receivePointer - 1] == 'K'){
-		sprintf(buffer, "start handle\r\n ");
-		USART3Send(buffer, sizeof(buffer));
+		//sprintf(buffer, "start handle\r\n ");
+		//USART3Send(buffer, sizeof(buffer));
 		USART2Send(wifiConnect2, sizeof(wifiConnect2));
 		clearReceiveBuffer();
 		wifiConnected = true;
+		setOnBoardLED(false);
 	}
 	
 }
@@ -322,16 +298,9 @@ void handleBufferInformation(){
 		currentHandleItemNumber ++;
 		if(currentHandleItemNumber == totalItemNumber) {
 			
-			sprintf(buffer, "\r\n total number of item: %d\r\n",numOfBalls);
-			USART3Send(buffer, sizeof(buffer));
-			
-	
-			for(int i = 0; i < numOfBalls; i++) {
-				ballToString(i);
-				//sprintf(buffer, "\r\ndistance: %f\r\n", balls[i].name,balls[i].xCoor[0], balls[i].yCoor[0]);
-				//USART3Send(buffer, sizeof(buffer));
-			}			
-			setOnBoardLED(false);
+			car.carF.updated = false;
+			car.carB.updated = false;
+			//setOnBoardLED(false);
 			shouldStartGetItem = false;
 			totalItemNumber = 0;
 			currentHandleItemNumber = 0;
@@ -344,7 +313,7 @@ void handleBufferInformation(){
 
 int findBallIndexForName(char *name){
 	for (int i = 0; i < numOfBalls; i++) {
-		if (strcmp(name, balls[i].name) == 0) {
+		if (strncmp(name, balls[i].name, 3) == 0) {
 			return i;
 		}
 	}
@@ -357,6 +326,13 @@ void ballToString(int i){
 	USART3Send(buffer, sizeof(buffer));
 }
 
+void carToString(){
+	sprintf(buffer, "\r\nname: %s\r\nx : %d\r\ny : %d\r\n",car.carF.name, car.carF.point.x, car.carF.point.y);
+	USART3Send(buffer, sizeof(buffer));
+
+	sprintf(buffer, "\r\nname: %s\r\nx : %d\r\ny : %d\r\nangle : %f\r\n",car.carB.name, car.carB.point.x, car.carB.point.y, car.angle);
+	USART3Send(buffer, sizeof(buffer));
+}
 
 void updateBallPos(int index, int x, int y){
 	int i = index;
@@ -379,12 +355,16 @@ void updateCarPos(char* name, int x, int y){
 	if(strncmp(name, "CHD", 3) == 0){
 		car.carF.point.x = x;
 		car.carF.point.y = y;
+		car.carF.updated = true;
 	} else {
 		car.carB.point.x = x;
 		car.carB.point.y = y;
+		car.carB.updated = true;
 	}
 	
-	car.angle = calculateAngle(car.carB.point, car.carF.point);
+	if(car.carF.updated && car.carB.updated){
+		car.angle = calculateAngle(car.carB.point, car.carF.point);
+	}
 }
 
 double calculateAngle(struct Point origin, struct Point p){
@@ -401,6 +381,134 @@ double calculateDistance(struct Point p1, struct Point p2){
 void initCarObject(){
 	strncpy(car.carF.name, "CHD", 3);
 	strncpy(car.carB.name, "CTL", 3);
-	originPoint.x = 82;
+	originPoint.x = 800;
 	originPoint.y = 286;
+}
+
+int calculateError(){
+	double CTangle = calculateAngle(car.carB.point, targetPoint);
+	double dAngle = CTangle - car.angle;
+
+	dAngle = dAngle > 180 ? (dAngle - 360) : ((dAngle < -180) ? (dAngle + 360) : dAngle);
+	dAngle = round(dAngle);
+	return (int)dAngle;
+}
+
+void updateTarget(){
+
+	char tName[3] = {'\0'};
+	
+	switch(stage) {
+		case stop:
+			strncpy(tName, "BOE", 3);
+			highSpeedMode = false;
+			break;
+		case bh1:
+		case bh2:
+			strncpy(tName, "ORI", 3);
+			highSpeedMode = true;
+			break;
+		case back1:
+			strncpy(tName, "BYW", 3);
+			highSpeedMode = false;
+			break;	
+		case back2:
+			strncpy(tName, "BLU", 3);
+			highSpeedMode = false;
+			break;	
+		case bh3:
+			startOperating(false);
+			break;
+		default:
+			break;
+	}
+	if(strncmp(tName, "ORI", 3) == 0) {
+		copyPointFromPoint(&targetPoint, &originPoint);
+		targetPointIndex = -1;
+		stage ++;
+		targetValid = true;
+	} else {
+		int index = findBallIndexForName(tName);
+		if(index == -1) {
+			targetValid = false;
+			return;
+		} else {
+			targetPointIndex = index;
+			copyPointFromPoint(&targetPoint, &(balls[index].points[balls[index].pointer]));
+			targetValid = true;
+			stage ++;
+		}
+	}
+	setOnBoardLED(stage % 2);
+	integrateTimer = currentTime;
+	accumulateError = 0;
+	
+}
+
+
+void pidControl(){
+		/*sprintf(buffer, "\r\n total number of item: %d\r\n",numOfBalls);
+			USART3Send(buffer, sizeof(buffer));	
+			
+			for(int i = 0; i < numOfBalls; i++) {
+				ballToString(i);
+				//sprintf(buffer, "\r\ndistance: %f\r\n", balls[i].name,balls[i].xCoor[0], balls[i].yCoor[0]);
+				//USART3Send(buffer, sizeof(buffer));
+			}			
+			carToString();
+	*/
+	if(operating) {		
+		if(!targetValid) {
+			setLeftWheelSpeed(0);
+			setRightWheelSpeed(0);
+			updateTarget();
+			return;
+		}
+		
+		if(targetPointIndex != -1) {
+						copyPointFromPoint(&targetPoint, &(balls[targetPointIndex].points[balls[targetPointIndex].pointer]));			
+		}
+
+		int distance = calculateDistance(car.carF.point, targetPoint);
+		int error = 0;
+		error = calculateError();
+		
+		if ((distance < 40)||(stage % 2 == 0 && car.carF.point.x > 750)) {
+			targetValid = false;
+			setLeftWheelSpeed(0);
+			setRightWheelSpeed(0);
+			return;
+		}
+		forward = abs(error) >= 90 ? false : true;
+		error = error > 90 ? (180 - error) : (error < -90 ? (-180 - error) : error);
+
+		//sprintf(buffer, "\r\nerror : %d\r\ndirection : %s\r\nstage: %d\r\nrarget x: %d\r\ntarget y: %d\r\n",  error, forward ? "forward" : "back", stage, targetPoint.x, targetPoint.y );
+		//USART3Send(buffer, sizeof(buffer));
+
+		// final speed calculation
+		leftSpeed =  42 + (highSpeedMode ? 10 : 0 ) + error * Kp + accumulateError * Ki / (currentTime - integrateTimer) + (error - previousError) * Kd;
+		rightSpeed = 44 + (highSpeedMode ? 10 : 0 ) - error * Kp - accumulateError * Ki / (currentTime - integrateTimer) - (error - previousError) * Kd;
+		
+		leftSpeed = leftSpeed < 5 ? 5: leftSpeed > 60? 60: leftSpeed;
+		leftSpeed *= forward ? 1 : -1;
+		rightSpeed = rightSpeed < 5 ? 5: rightSpeed > 60? 60: rightSpeed;
+		rightSpeed *= forward ? 1 : -1;
+	
+		setLeftWheelSpeed(leftSpeed);
+		setRightWheelSpeed(rightSpeed);
+		
+		// record I_error and P_error
+		accumulateError += error;
+		previousError = error;
+		
+	} else {
+		setLeftWheelSpeed(0);
+		setRightWheelSpeed(0);
+	}
+}
+
+bool copyPointFromPoint(struct Point* destP, struct Point* sourceP){
+	destP -> x = sourceP -> x;
+	destP -> y = sourceP -> y; 
+	return true;
 }

@@ -22,6 +22,7 @@ void setLeftWheelSpeed(int percent) {
 	
 	int dutyCycle = percent * 1 - 1;
 	dutyCycle = dutyCycle >= 0 ? dutyCycle : 0;
+	
 	TIM3 -> CCR2 =  dutyCycle;
 }
 
