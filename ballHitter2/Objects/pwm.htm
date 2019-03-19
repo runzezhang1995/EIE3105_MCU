@@ -3,7 +3,7 @@
 <title>Static Call Graph - [.\Objects\pwm.axf]</title></head>
 <body><HR>
 <H1>Static Call Graph for image .\Objects\pwm.axf</H1><HR>
-<BR><P>#&#060CALLGRAPH&#062# ARM Linker, 5060750: Last Updated: Tue Mar 19 20:26:58 2019
+<BR><P>#&#060CALLGRAPH&#062# ARM Linker, 5060750: Last Updated: Tue Mar 19 22:44:56 2019
 <BR><P>
 <H3>Maximum Stack Usage =        320 bytes + Unknown(Functions without stacksize, Cycles, Untraceable Function Pointers)</H3><H3>
 Call chain for Maximum Stack Depth:</H3>
@@ -453,7 +453,7 @@ Global Symbols
 <P><STRONG><a name="[a4]"></a>strncmp</STRONG> (Thumb, 150 bytes, Stack size 16 bytes, strncmp.o(.text))
 <BR><BR>[Stack]<UL><LI>Max Depth = 16<LI>Call Chain = strncmp
 </UL>
-<BR>[Called By]<UL><LI><a href="#[af]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;updateTarget
+<BR>[Called By]<UL><LI><a href="#[b0]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;updateTarget
 <LI><a href="#[a8]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;updateCarPos
 <LI><a href="#[7f]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;handleBufferInformation
 <LI><a href="#[a3]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;findBallIndexForName
@@ -464,7 +464,7 @@ Global Symbols
 </UL>
 <BR>[Calls]<UL><LI><a href="#[54]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;__aeabi_memclr
 </UL>
-<BR>[Called By]<UL><LI><a href="#[af]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;updateTarget
+<BR>[Called By]<UL><LI><a href="#[b0]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;updateTarget
 <LI><a href="#[aa]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;initCarObject
 <LI><a href="#[7f]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;handleBufferInformation
 </UL>
@@ -643,7 +643,7 @@ Global Symbols
 
 <P><STRONG><a name="[b9]"></a>GPIO_WriteBit</STRONG> (Thumb, 10 bytes, Stack size 0 bytes, stm32f10x_gpio.o(i.GPIO_WriteBit))
 <BR><BR>[Called By]<UL><LI><a href="#[ac]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;setRightWheelDirection
-<LI><a href="#[b7]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;setOnBoardLED
+<LI><a href="#[ad]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;setOnBoardLED
 <LI><a href="#[ab]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;setLeftWheelDirection
 </UL>
 
@@ -1027,8 +1027,8 @@ Global Symbols
 <LI><a href="#[34]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;USART2_IRQHandler
 </UL>
 
-<P><STRONG><a name="[b0]"></a>copyPointFromPoint</STRONG> (Thumb, 14 bytes, Stack size 0 bytes, main.o(i.copyPointFromPoint))
-<BR><BR>[Called By]<UL><LI><a href="#[af]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;updateTarget
+<P><STRONG><a name="[b1]"></a>copyPointFromPoint</STRONG> (Thumb, 14 bytes, Stack size 0 bytes, main.o(i.copyPointFromPoint))
+<BR><BR>[Called By]<UL><LI><a href="#[b0]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;updateTarget
 <LI><a href="#[6a]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;pidControl
 </UL>
 
@@ -1041,7 +1041,7 @@ Global Symbols
 </UL>
 <BR>[Calls]<UL><LI><a href="#[a4]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;strncmp
 </UL>
-<BR>[Called By]<UL><LI><a href="#[af]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;updateTarget
+<BR>[Called By]<UL><LI><a href="#[b0]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;updateTarget
 </UL>
 
 <P><STRONG><a name="[a6]"></a>getValueForHexChar</STRONG> (Thumb, 50 bytes, Stack size 0 bytes, utils.o(i.getValueForHexChar))
@@ -1087,10 +1087,11 @@ Global Symbols
 <BR>[Called By]<UL><LI><a href="#[a9]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;init
 </UL>
 
-<P><STRONG><a name="[49]"></a>main</STRONG> (Thumb, 34 bytes, Stack size 0 bytes, main.o(i.main))
+<P><STRONG><a name="[49]"></a>main</STRONG> (Thumb, 40 bytes, Stack size 0 bytes, main.o(i.main))
 <BR><BR>[Stack]<UL><LI>Max Depth = 108<LI>Call Chain = main &rArr; init &rArr; USART2_init &rArr; USART_Init &rArr; RCC_GetClocksFreq
 </UL>
 <BR>[Calls]<UL><LI><a href="#[ac]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;setRightWheelDirection
+<LI><a href="#[ad]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;setOnBoardLED
 <LI><a href="#[ab]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;setLeftWheelDirection
 <LI><a href="#[61]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;startOperating
 <LI><a href="#[a9]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;init
@@ -1099,21 +1100,22 @@ Global Symbols
 <BR>[Called By]<UL><LI><a href="#[48]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;__rt_entry_main
 </UL>
 
-<P><STRONG><a name="[6a]"></a>pidControl</STRONG> (Thumb, 674 bytes, Stack size 48 bytes, main.o(i.pidControl))
+<P><STRONG><a name="[6a]"></a>pidControl</STRONG> (Thumb, 820 bytes, Stack size 48 bytes, main.o(i.pidControl))
 <BR><BR>[Stack]<UL><LI>Max Depth = 296<LI>Call Chain = pidControl &rArr; calculateDistance &rArr; pow &rArr; sqrt &rArr; _dsqrt &rArr; __fpl_dnaninf
 </UL>
-<BR>[Calls]<UL><LI><a href="#[ae]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;setRightWheelSpeed
-<LI><a href="#[ad]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;setLeftWheelSpeed
-<LI><a href="#[af]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;updateTarget
-<LI><a href="#[b0]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;copyPointFromPoint
+<BR>[Calls]<UL><LI><a href="#[af]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;setRightWheelSpeed
+<LI><a href="#[ad]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;setOnBoardLED
+<LI><a href="#[ae]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;setLeftWheelSpeed
+<LI><a href="#[b0]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;updateTarget
+<LI><a href="#[b1]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;copyPointFromPoint
 <LI><a href="#[9d]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;calculateError
 <LI><a href="#[9a]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;calculateDistance
-<LI><a href="#[b2]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;__aeabi_fmul
-<LI><a href="#[b1]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;__aeabi_i2f
-<LI><a href="#[b5]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;__aeabi_f2iz
-<LI><a href="#[b3]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;__aeabi_fdiv
-<LI><a href="#[b6]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;__aeabi_fsub
-<LI><a href="#[b4]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;__aeabi_fadd
+<LI><a href="#[b3]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;__aeabi_fmul
+<LI><a href="#[b2]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;__aeabi_i2f
+<LI><a href="#[b6]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;__aeabi_f2iz
+<LI><a href="#[b4]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;__aeabi_fdiv
+<LI><a href="#[b7]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;__aeabi_fsub
+<LI><a href="#[b5]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;__aeabi_fadd
 <LI><a href="#[a1]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;__aeabi_d2iz
 </UL>
 <BR>[Called By]<UL><LI><a href="#[2a]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;TIM2_IRQHandler
@@ -1143,12 +1145,8 @@ Global Symbols
 <BR>[Called By]<UL><LI><a href="#[9a]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;calculateDistance
 </UL>
 
-<P><STRONG><a name="[7c]"></a>pushCharacterToReceiveBuffer</STRONG> (Thumb, 42 bytes, Stack size 8 bytes, main.o(i.pushCharacterToReceiveBuffer))
-<BR><BR>[Stack]<UL><LI>Max Depth = 16<LI>Call Chain = pushCharacterToReceiveBuffer &rArr; setOnBoardLED
-</UL>
-<BR>[Calls]<UL><LI><a href="#[b7]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;setOnBoardLED
-</UL>
-<BR>[Called By]<UL><LI><a href="#[34]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;USART2_IRQHandler
+<P><STRONG><a name="[7c]"></a>pushCharacterToReceiveBuffer</STRONG> (Thumb, 32 bytes, Stack size 0 bytes, main.o(i.pushCharacterToReceiveBuffer))
+<BR><BR>[Called By]<UL><LI><a href="#[34]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;USART2_IRQHandler
 </UL>
 
 <P><STRONG><a name="[a0]"></a>round</STRONG> (Thumb, 136 bytes, Stack size 32 bytes, round.o(i.round))
@@ -1169,11 +1167,11 @@ Global Symbols
 </UL>
 <BR>[Calls]<UL><LI><a href="#[b9]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;GPIO_WriteBit
 </UL>
-<BR>[Called By]<UL><LI><a href="#[ad]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;setLeftWheelSpeed
+<BR>[Called By]<UL><LI><a href="#[ae]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;setLeftWheelSpeed
 <LI><a href="#[49]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;main
 </UL>
 
-<P><STRONG><a name="[ad]"></a>setLeftWheelSpeed</STRONG> (Thumb, 44 bytes, Stack size 16 bytes, utils.o(i.setLeftWheelSpeed))
+<P><STRONG><a name="[ae]"></a>setLeftWheelSpeed</STRONG> (Thumb, 44 bytes, Stack size 16 bytes, utils.o(i.setLeftWheelSpeed))
 <BR><BR>[Stack]<UL><LI>Max Depth = 24<LI>Call Chain = setLeftWheelSpeed &rArr; setLeftWheelDirection
 </UL>
 <BR>[Calls]<UL><LI><a href="#[ab]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;setLeftWheelDirection
@@ -1182,14 +1180,13 @@ Global Symbols
 <LI><a href="#[6a]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;pidControl
 </UL>
 
-<P><STRONG><a name="[b7]"></a>setOnBoardLED</STRONG> (Thumb, 16 bytes, Stack size 8 bytes, utils.o(i.setOnBoardLED))
+<P><STRONG><a name="[ad]"></a>setOnBoardLED</STRONG> (Thumb, 16 bytes, Stack size 8 bytes, utils.o(i.setOnBoardLED))
 <BR><BR>[Stack]<UL><LI>Max Depth = 8<LI>Call Chain = setOnBoardLED
 </UL>
 <BR>[Calls]<UL><LI><a href="#[b9]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;GPIO_WriteBit
 </UL>
-<BR>[Called By]<UL><LI><a href="#[af]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;updateTarget
-<LI><a href="#[61]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;startOperating
-<LI><a href="#[7c]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;pushCharacterToReceiveBuffer
+<BR>[Called By]<UL><LI><a href="#[6a]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;pidControl
+<LI><a href="#[49]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;main
 </UL>
 
 <P><STRONG><a name="[ac]"></a>setRightWheelDirection</STRONG> (Thumb, 18 bytes, Stack size 8 bytes, utils.o(i.setRightWheelDirection))
@@ -1197,11 +1194,11 @@ Global Symbols
 </UL>
 <BR>[Calls]<UL><LI><a href="#[b9]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;GPIO_WriteBit
 </UL>
-<BR>[Called By]<UL><LI><a href="#[ae]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;setRightWheelSpeed
+<BR>[Called By]<UL><LI><a href="#[af]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;setRightWheelSpeed
 <LI><a href="#[49]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;main
 </UL>
 
-<P><STRONG><a name="[ae]"></a>setRightWheelSpeed</STRONG> (Thumb, 44 bytes, Stack size 16 bytes, utils.o(i.setRightWheelSpeed))
+<P><STRONG><a name="[af]"></a>setRightWheelSpeed</STRONG> (Thumb, 44 bytes, Stack size 16 bytes, utils.o(i.setRightWheelSpeed))
 <BR><BR>[Stack]<UL><LI>Max Depth = 24<LI>Call Chain = setRightWheelSpeed &rArr; setRightWheelDirection
 </UL>
 <BR>[Calls]<UL><LI><a href="#[ac]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;setRightWheelDirection
@@ -1220,20 +1217,18 @@ Global Symbols
 <LI><a href="#[9b]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;pow
 </UL>
 
-<P><STRONG><a name="[61]"></a>startOperating</STRONG> (Thumb, 106 bytes, Stack size 8 bytes, main.o(i.startOperating))
+<P><STRONG><a name="[61]"></a>startOperating</STRONG> (Thumb, 94 bytes, Stack size 8 bytes, main.o(i.startOperating))
 <BR><BR>[Stack]<UL><LI>Max Depth = 32<LI>Call Chain = startOperating &rArr; setRightWheelSpeed &rArr; setRightWheelDirection
 </UL>
-<BR>[Calls]<UL><LI><a href="#[ae]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;setRightWheelSpeed
-<LI><a href="#[b7]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;setOnBoardLED
-<LI><a href="#[ad]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;setLeftWheelSpeed
+<BR>[Calls]<UL><LI><a href="#[af]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;setRightWheelSpeed
+<LI><a href="#[ae]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;setLeftWheelSpeed
 <LI><a href="#[7d]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;USART3Send
 </UL>
-<BR>[Called By]<UL><LI><a href="#[af]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;updateTarget
-<LI><a href="#[49]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;main
+<BR>[Called By]<UL><LI><a href="#[49]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;main
 <LI><a href="#[25]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;EXTI9_5_IRQHandler
 </UL>
 
-<P><STRONG><a name="[a7]"></a>updateBallPos</STRONG> (Thumb, 272 bytes, Stack size 40 bytes, main.o(i.updateBallPos))
+<P><STRONG><a name="[a7]"></a>updateBallPos</STRONG> (Thumb, 274 bytes, Stack size 40 bytes, main.o(i.updateBallPos))
 <BR><BR>[Stack]<UL><LI>Max Depth = 288<LI>Call Chain = updateBallPos &rArr; calculateDistance &rArr; pow &rArr; sqrt &rArr; _dsqrt &rArr; __fpl_dnaninf
 </UL>
 <BR>[Calls]<UL><LI><a href="#[9a]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;calculateDistance
@@ -1251,13 +1246,11 @@ Global Symbols
 <BR>[Called By]<UL><LI><a href="#[7f]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;handleBufferInformation
 </UL>
 
-<P><STRONG><a name="[af]"></a>updateTarget</STRONG> (Thumb, 280 bytes, Stack size 16 bytes, main.o(i.updateTarget))
-<BR><BR>[Stack]<UL><LI>Max Depth = 48<LI>Call Chain = updateTarget &rArr; startOperating &rArr; setRightWheelSpeed &rArr; setRightWheelDirection
+<P><STRONG><a name="[b0]"></a>updateTarget</STRONG> (Thumb, 244 bytes, Stack size 16 bytes, main.o(i.updateTarget))
+<BR><BR>[Stack]<UL><LI>Max Depth = 48<LI>Call Chain = updateTarget &rArr; findBallIndexForName &rArr; strncmp
 </UL>
-<BR>[Calls]<UL><LI><a href="#[b7]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;setOnBoardLED
-<LI><a href="#[61]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;startOperating
-<LI><a href="#[a3]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;findBallIndexForName
-<LI><a href="#[b0]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;copyPointFromPoint
+<BR>[Calls]<UL><LI><a href="#[a3]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;findBallIndexForName
+<LI><a href="#[b1]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;copyPointFromPoint
 <LI><a href="#[53]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;strncpy
 <LI><a href="#[a4]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;strncmp
 </UL>
@@ -1433,7 +1426,7 @@ Global Symbols
 <LI><a href="#[c9]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;_dadd1
 </UL>
 
-<P><STRONG><a name="[b4]"></a>__aeabi_fadd</STRONG> (Thumb, 0 bytes, Stack size 16 bytes, faddsub_clz.o(x$fpl$fadd))
+<P><STRONG><a name="[b5]"></a>__aeabi_fadd</STRONG> (Thumb, 0 bytes, Stack size 16 bytes, faddsub_clz.o(x$fpl$fadd))
 <BR><BR>[Stack]<UL><LI>Max Depth = 16<LI>Call Chain = __aeabi_fadd
 </UL>
 <BR>[Called By]<UL><LI><a href="#[6a]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;pidControl
@@ -1445,7 +1438,7 @@ Global Symbols
 <LI><a href="#[cc]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;_fsub1
 </UL>
 
-<P><STRONG><a name="[b3]"></a>__aeabi_fdiv</STRONG> (Thumb, 0 bytes, Stack size 16 bytes, fdiv.o(x$fpl$fdiv))
+<P><STRONG><a name="[b4]"></a>__aeabi_fdiv</STRONG> (Thumb, 0 bytes, Stack size 16 bytes, fdiv.o(x$fpl$fdiv))
 <BR><BR>[Stack]<UL><LI>Max Depth = 16<LI>Call Chain = __aeabi_fdiv
 </UL>
 <BR>[Called By]<UL><LI><a href="#[6a]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;pidControl
@@ -1456,7 +1449,7 @@ Global Symbols
 <LI><a href="#[ce]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;__fpl_fnaninf
 </UL>
 
-<P><STRONG><a name="[b5]"></a>__aeabi_f2iz</STRONG> (Thumb, 0 bytes, Stack size 16 bytes, ffix.o(x$fpl$ffix))
+<P><STRONG><a name="[b6]"></a>__aeabi_f2iz</STRONG> (Thumb, 0 bytes, Stack size 16 bytes, ffix.o(x$fpl$ffix))
 <BR><BR>[Stack]<UL><LI>Max Depth = 16<LI>Call Chain = __aeabi_f2iz
 </UL>
 <BR>[Called By]<UL><LI><a href="#[6a]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;pidControl
@@ -1466,13 +1459,13 @@ Global Symbols
 <BR><BR>[Calls]<UL><LI><a href="#[ce]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;__fpl_fnaninf
 </UL>
 
-<P><STRONG><a name="[b1]"></a>__aeabi_i2f</STRONG> (Thumb, 0 bytes, Stack size 0 bytes, fflt_clz.o(x$fpl$fflt))
+<P><STRONG><a name="[b2]"></a>__aeabi_i2f</STRONG> (Thumb, 0 bytes, Stack size 0 bytes, fflt_clz.o(x$fpl$fflt))
 <BR><BR>[Called By]<UL><LI><a href="#[6a]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;pidControl
 </UL>
 
 <P><STRONG><a name="[108]"></a>_fflt</STRONG> (Thumb, 48 bytes, Stack size 0 bytes, fflt_clz.o(x$fpl$fflt), UNUSED)
 
-<P><STRONG><a name="[b2]"></a>__aeabi_fmul</STRONG> (Thumb, 0 bytes, Stack size 16 bytes, fmul.o(x$fpl$fmul))
+<P><STRONG><a name="[b3]"></a>__aeabi_fmul</STRONG> (Thumb, 0 bytes, Stack size 16 bytes, fmul.o(x$fpl$fmul))
 <BR><BR>[Stack]<UL><LI>Max Depth = 16<LI>Call Chain = __aeabi_fmul
 </UL>
 <BR>[Called By]<UL><LI><a href="#[6a]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;pidControl
@@ -1497,7 +1490,7 @@ Global Symbols
 <LI><a href="#[cb]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;_fadd
 </UL>
 
-<P><STRONG><a name="[b6]"></a>__aeabi_fsub</STRONG> (Thumb, 0 bytes, Stack size 16 bytes, faddsub_clz.o(x$fpl$fsub))
+<P><STRONG><a name="[b7]"></a>__aeabi_fsub</STRONG> (Thumb, 0 bytes, Stack size 16 bytes, faddsub_clz.o(x$fpl$fsub))
 <BR><BR>[Stack]<UL><LI>Max Depth = 16<LI>Call Chain = __aeabi_fsub
 </UL>
 <BR>[Called By]<UL><LI><a href="#[6a]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;pidControl

@@ -9,7 +9,7 @@
 #include "math.h"
 #endif
 
-enum State {stop = 0, bh1 = 1, back1, bh2, back2, bh3, end};
+enum State {stop = 0, bh, back, wait};
 
 
 struct Point{
