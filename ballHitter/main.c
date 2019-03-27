@@ -327,10 +327,10 @@ void ballToString(int i){
 }
 
 void carToString(){
-	sprintf(buffer, "\r\nname: %s\r\nx : %d\r\ny : %d\r\n",car.carF.name, car.carF.point.x, car.carF.point.y);
+	sprintf(buffer, "\r\nname: %s\r\nx : %d\r\ny : %d\r\n",car.carF.name, car.carF.points[(car.carF.pointer + 4 )% 5].x, car.carF.points[(car.carF.pointer + 4 )% 5].y);
 	USART3Send(buffer, sizeof(buffer));
 
-	sprintf(buffer, "\r\nname: %s\r\nx : %d\r\ny : %d\r\nangle : %f\r\n",car.carB.name, car.carB.point.x, car.carB.point.y, car.angle);
+	sprintf(buffer, "\r\nname: %s\r\nx : %d\r\ny : %d\r\nangle : %f\r\n",car.carB.name, car.carB.points[(car.carB.pointer + 4 )% 5].x, car.carB.points[(car.carB.pointer + 4 )% 5].y, car.angle);
 	USART3Send(buffer, sizeof(buffer));
 }
 
@@ -353,18 +353,19 @@ void updateBallPos(int index, int x, int y){
 
 void updateCarPos(char* name, int x, int y){
 	if(strncmp(name, "CHD", 3) == 0){
-		car.carF.point.x = x;
-		car.carF.point.y = y;
+		car.carF.points[car.carF.pointer].x = x;
+		car.carF.points[car.carF.pointer].y = y;
+		car.carF.pointer = (car.carF.pointer + 1) % 5;
 		car.carF.updated = true;
 	} else {
-		car.carB.point.x = x;
-		car.carB.point.y = y;
-		car.carB.updated = true;
-	}
+		car.carB.points[car.carB.pointer].x = x;
+		car.carB.points[car.carB.pointer].y = y;
+		car.carB.pointer = (car.carB.pointer + 1) % 5;
+		car.carB.updated = true;	}
 	
 	if(car.carF.updated && car.carB.updated){
-		car.angle = calculateAngle(car.carB.point, car.carF.point);
-	}
+		car.angle = calculateAngle(car.carB.points[(car.carB.pointer + 4) % 5], car.carF.points[(car.carF.pointer + 4) % 5]);
+	} 
 }
 
 double calculateAngle(struct Point origin, struct Point p){
@@ -381,12 +382,18 @@ double calculateDistance(struct Point p1, struct Point p2){
 void initCarObject(){
 	strncpy(car.carF.name, "CHD", 3);
 	strncpy(car.carB.name, "CTL", 3);
+	car.carF.points[0].x = 700;
+	car.carF.points[0].y = 286;
+	car.carB.points[0].x = 740;
+	car.carB.points[0].y = 286;
+	car.carF.pointer = 1;
+	car.carB.pointer = 1;
 	originPoint.x = 800;
 	originPoint.y = 286;
 }
 
 int calculateError(){
-	double CTangle = calculateAngle(car.carB.point, targetPoint);
+	double CTangle = calculateAngle(car.carB.points[(car.carB.pointer + 4 ) % 5], targetPoint);
 	double dAngle = CTangle - car.angle;
 
 	dAngle = dAngle > 180 ? (dAngle - 360) : ((dAngle < -180) ? (dAngle + 360) : dAngle);
@@ -398,9 +405,12 @@ void updateTarget(){
 
 	char tName[3] = {'\0'};
 	
+	accumulateError = 0;
+	integrateTimer = currentTime;
+	
 	switch(stage) {
 		case stop:
-			strncpy(tName, "BOE", 3);
+			strncpy(tName, "BYW", 3);
 			highSpeedMode = false;
 			break;
 		case bh1:
@@ -409,7 +419,7 @@ void updateTarget(){
 			highSpeedMode = true;
 			break;
 		case back1:
-			strncpy(tName, "BYW", 3);
+			strncpy(tName, "BRD", 3);
 			highSpeedMode = false;
 			break;	
 		case back2:
@@ -447,6 +457,14 @@ void updateTarget(){
 
 
 void pidControl(){
+	if(wifiConnected) {
+		setOnBoardLED(stage % 2);
+		if(!operating){
+			startOperating(true);
+		}
+	}
+	
+	
 		/*sprintf(buffer, "\r\n total number of item: %d\r\n",numOfBalls);
 			USART3Send(buffer, sizeof(buffer));	
 			
@@ -469,11 +487,11 @@ void pidControl(){
 						copyPointFromPoint(&targetPoint, &(balls[targetPointIndex].points[balls[targetPointIndex].pointer]));			
 		}
 
-		int distance = calculateDistance(car.carF.point, targetPoint);
+		int distance = calculateDistance(car.carF.points[(car.carF.pointer + 4 )% 5], targetPoint);
 		int error = 0;
 		error = calculateError();
 		
-		if ((distance < 40)||(stage % 2 == 0 && car.carF.point.x > 750)) {
+		if ((distance < 43)||(stage % 1 == 0 && car.carF.points[(car.carF.pointer + 4 )% 5].x < 500)||(stage % 2 == 0 && car.carF.points[(car.carF.pointer + 4 )% 5].x > 800)) {
 			targetValid = false;
 			setLeftWheelSpeed(0);
 			setRightWheelSpeed(0);
@@ -486,8 +504,8 @@ void pidControl(){
 		//USART3Send(buffer, sizeof(buffer));
 
 		// final speed calculation
-		leftSpeed =  42 + (highSpeedMode ? 10 : 0 ) + error * Kp + accumulateError * Ki / (currentTime - integrateTimer) + (error - previousError) * Kd;
-		rightSpeed = 44 + (highSpeedMode ? 10 : 0 ) - error * Kp - accumulateError * Ki / (currentTime - integrateTimer) - (error - previousError) * Kd;
+		leftSpeed =  47 + (highSpeedMode ? 10 : 0 ) + error * Kp + accumulateError * Ki / (currentTime - integrateTimer) + (error - previousError) * Kd;
+		rightSpeed = 49 + (highSpeedMode ? 10 : 0 ) - error * Kp - accumulateError * Ki / (currentTime - integrateTimer) - (error - previousError) * Kd;
 		
 		leftSpeed = leftSpeed < 5 ? 5: leftSpeed > 60? 60: leftSpeed;
 		leftSpeed *= forward ? 1 : -1;

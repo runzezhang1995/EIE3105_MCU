@@ -450,7 +450,7 @@ void pidControl(){
 		if(wifiConnected){
 			setOnBoardLED(stage % 2);
 		}
-	
+`	
 		/*sprintf(buffer, "\r\n total number of item: %d\r\n",numOfBalls);
 			USART3Send(buffer, sizeof(buffer));	
 			

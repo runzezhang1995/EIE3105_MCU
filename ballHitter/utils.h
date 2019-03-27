@@ -28,6 +28,7 @@ struct FieldObject {
 
 	bool isAvailable;
 	bool isStop;
+	bool updated;
 };
 
 struct SimpleFieldObject {
@@ -38,8 +39,8 @@ struct SimpleFieldObject {
 
 
 struct Car {
-	struct SimpleFieldObject carF;
-	struct SimpleFieldObject carB;
+	struct FieldObject carF;
+	struct FieldObject carB;
 	double angle;
 };
 
